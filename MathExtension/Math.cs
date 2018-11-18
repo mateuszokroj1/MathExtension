@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MathExtension
 {
-    public static class MathExtension
+    public static class Math
     {
         /// <summary>
         /// Całkowanie metodą trapezów
