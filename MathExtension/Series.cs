@@ -113,6 +113,7 @@ namespace MathExtension
         public double First { get; set; } = 1;
         public double Difference { get; set; } = 1;
 
+        [ReadOnly(true)]
         protected new Func<ulong, double> Definition
         {
             get { return (n) => First + Difference * (n-1); }
@@ -124,9 +125,9 @@ namespace MathExtension
         public GeometricProgression() : base() { base.Definition = this.Definition; }
 
         public double First { get; set; } = 1;
-
         public double Ratio = 2;
 
+        [ReadOnly(true)]
         protected new Func<ulong,double> Definition
         {
             get { return (n) => First * System.Math.Pow(Ratio, n-1); }
