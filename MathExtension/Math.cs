@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace MathExtension
 {
@@ -7,6 +8,10 @@ namespace MathExtension
         /// <summary>
         /// Całkowanie metodą trapezów
         /// </summary>
+        /// <param name="f">Funkcja do całkowania</param>
+        /// <param name="n">Podział pola na n elementów</param>
+        /// <param name="a">Granica dolna</param>
+        /// <param name="b">Granica górna</param>
         /// <returns>Obliczona całka ograniczona</returns>
         public static double Integral(Func<double, double> f, uint n, double a, double b)
         {
@@ -16,38 +21,18 @@ namespace MathExtension
             for (uint i = 1; i <= n; i++)
                 S += f(a + Convert.ToDouble(i) * h);
 
-            return (2d * S + f(a) + f(b)) * h / 2d;
+            return (2d * S + f(a) + f(b)) * h / 2.0;
         }
 
-        /// <summary>
-        /// Silnia
-        /// </summary>
-        /// <returns>Maksymalna wartość to n < 13</returns>
-        public static uint Factorial(uint n)
+        public static double Factorial(uint n)
         {
-            if (n > 12) throw new ArgumentException("Należy użyć metody z wartościami ulong.");
-
             switch(n)
             {
                 case 0:
                 case 1:
-                    return 1;
+                    return 1.0;
                 default:
                     return n * Factorial(n - 1);
-            }
-        }
-
-        public static ulong Factorial(ulong n)
-        {
-            if (n > 20) throw new ArgumentOutOfRangeException("Przekroczono maksymalną wartość wyjściową typu UInt64");
-
-            switch(n)
-            {
-                case 0:
-                case 1:
-                    return 1L;
-                default:
-                    return n * Factorial(n - 1L);
             }
         }
 
@@ -55,15 +40,14 @@ namespace MathExtension
         {
             double oldvalue = 0, newvalue = 0;
 
-            ulong n = 1;
-            while(Math.Abs(newvalue - oldvalue) > 0.000000001)
+            uint n = 1;
+            do
             {
                 oldvalue = newvalue;
-                newvalue += (Math.Pow(-1,n) * Math.Pow(x,2*n+1)) / Factorial(2*n+1);
-                if (n == ulong.MaxValue) break;
+                newvalue += (System.Math.Pow(-1,n) * System.Math.Pow(x,2*n+1)) / Factorial(2*n+1);
+                if (n == uint.MaxValue) break;
                 n++;
-            }
-
+            } while (System.Math.Abs(newvalue - oldvalue) > 0.00000000001);
             return newvalue;
         }
 
@@ -71,29 +55,79 @@ namespace MathExtension
         {
             double oldvalue = 0, newvalue = 0;
 
-            ulong n = 1;
-            while(Math.Abs(newvalue - oldvalue) > 0.00000001)
+            uint n = 1;
+            do
             {
                 oldvalue = newvalue;
-                newvalue += (Math.Pow(-1,n)*Math.Pow(x,2*n)) / Factorial(2*n);
-            }
-
+                newvalue += (System.Math.Pow(-1,n)*System.Math.Pow(x,2*n)) / Factorial(2*n);
+                if (n == uint.MaxValue) break;
+                n++;
+            } while (System.Math.Abs(newvalue - oldvalue) > 0.00000000001);
             return newvalue;
         }
 
+        /// <summary>
+        /// Exponential
+        /// </summary>
+        /// <returns>e^x</returns>
         public static double Exp(double x)
         {
             double oldvalue = 0, newvalue = 0;
 
-            ulong n = 1;
-            while(Math.Abs(newvalue - oldvalue) > 0.0000001)
+            uint n = 1;
+            do
             {
                 oldvalue = newvalue;
-                newvalue += Math.Pow (x,n) / Factorial(n);
-                if (n == ulong.MaxValue) break;
+                newvalue += System.Math.Pow (x,n) / Factorial(n);
+                if (n == uint.MaxValue) break;
                 n++;
-            }
+            } while (System.Math.Abs(newvalue - oldvalue) > 0.00000000001);
             return newvalue;
+        }
+
+        public static double SquareRoot(double x)
+        {
+            if (x < 0) throw new ArgumentOutOfRangeException("x");
+
+            if (x == 0) return 0;
+
+            double y = 0;
+            double newy = x / 2.0;
+            while (System.Math.Abs(newy - y) > 0.00000000001)
+            {
+                y = newy;
+                newy = 0.5 * (y + x / y);
+            }
+            return newy;
+        }
+
+        public static IEnumerable<T> Sort<T>(this IEnumerable<T> input) where T : IComparable
+        {
+            if (input == null || input.Count() < 2) return input;
+            T[] ret = (T[])input;
+            for (uint i = 0; i <= ret.Length; i++)
+            {
+                for (uint index = 0; index < ret.Length - 1; index++)
+                {
+                    if (ret[index].CompareTo(ret[index + 1]) > 0)
+                    {
+                        T first = ret[index], second = ret[index + 1];
+                        ret[index] = second;
+                        ret[index + 1] = first;
+                    }
+                }
+            }
+            return ret;
+        }
+
+        public static uint Count<T>(this IEnumerable<T> input)
+        {
+            IEnumerator<T> enumerator = input.GetEnumerator();
+            enumerator.Reset();
+            uint count = 0;
+            while (enumerator.MoveNext())
+                count++;
+            return count;
         }
     }
 }

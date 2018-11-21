@@ -28,6 +28,9 @@ namespace MathExtension
 
         IEnumerator<double> IEnumerable<double>.GetEnumerator() => new SequenceEnumerator(this);
 
+        /// <summary>
+        /// Ciąg Fibonacciego
+        /// </summary>
         [ReadOnly(true)]
         public static Sequence Fibonacci
         {
@@ -48,6 +51,9 @@ namespace MathExtension
         }
     }
 
+    /// <summary>
+    /// Enumerator ciągu
+    /// </summary>
     internal class SequenceEnumerator : IEnumerator<double>
     {
         public SequenceEnumerator(Sequence sequence) : base() { seq = sequence; }
@@ -107,6 +113,9 @@ namespace MathExtension
         #endregion
     }
 
+    /// <summary>
+    /// Ciąg arytmetyczny
+    /// </summary>
     public class ArythmeticProgression : Sequence
     {
         public ArythmeticProgression() : base() { base.Definition = this.Definition; }
@@ -120,6 +129,9 @@ namespace MathExtension
         }
     }
 
+    /// <summary>
+    /// Ciąg geometryczny
+    /// </summary>
     public class GeometricProgression : Sequence
     {
         public GeometricProgression() : base() { base.Definition = this.Definition; }
