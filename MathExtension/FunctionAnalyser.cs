@@ -18,6 +18,7 @@ namespace MathExtension.FunctionAnalyser
             public Analyser(Func<double, double> f, ValueRange inputRange)
             {
                 if (f == null) throw new ArgumentNullException("f");
+
             }
         #endregion
 
@@ -76,6 +77,18 @@ namespace MathExtension.FunctionAnalyser
         #endregion
 
         #region Methods
+            public bool Contains(double value)
+            {
+                if (
+                    value < this.min ||
+                    (value == this.min && this.Include != IncludeValues.Min && this.Include != IncludeValues.Both) ||
+                    //EXCLUDE
+                    value > this.max ||
+                    (value == this.max && this.Include != IncludeValues.Max && this.Include != IncludeValues.Both)
+                )
+                    return false;
+                return true;
+            }
             IEnumerator IEnumerable.GetEnumerator()
             {
                 throw new NotImplementedException();
@@ -116,11 +129,21 @@ namespace MathExtension.FunctionAnalyser
     /// </summary>
     internal class ValueRangeEnumerator : IEnumerator<double>
     {
+        public ValueRangeEnumerator(ValueRange Range)
+        {
+            if (Range == null) throw new ArgumentNullException("Range");
+            range = Range;
+            if (range.Min == double.NegativeInfinity) range.Min = double.MinValue;
+            if (range.Max == double.PositiveInfinity) range.Max = double.MaxValue;
+        }
+        private ValueRange range;
+        double value = double.NegativeInfinity;
         object IEnumerator.Current
         {
             get
             {
-                throw new NotImplementedException();
+                if (double.IsNegativeInfinity(value)) throw new InvalidOperationException();
+                return value;
             }
         }
 
@@ -128,24 +151,38 @@ namespace MathExtension.FunctionAnalyser
         {
             get
             {
-                throw new NotImplementedException();
+                if (double.IsNegativeInfinity(value)) throw new InvalidOperationException();
+                return value;
+            }
+        }
+
+        protected double Epsilon
+        {
+            get
+            {
+                if (range.BaseRange == BaseRange.Integer) return 1;
+                else
+                    return 0.25;
             }
         }
 
         void IDisposable.Dispose()
         {
-            
+            this.range = null;
         }
 
         bool IEnumerator.MoveNext()
         {
-            throw new NotImplementedException();
+            if (value == double.MaxValue) return false;
+            Increment:
+            value += Epsilon;
+            if (value > range.Max ||
+                    (value == range.Max && range.Include != IncludeValues.Max && range.Include != IncludeValues.Both)) return false;
+            if (!range.Contains(value)) goto Increment;
+            return true;
         }
 
-        void IEnumerator.Reset()
-        {
-            throw new NotImplementedException();
-        }
+        void IEnumerator.Reset() => this.value = double.NegativeInfinity;
     }
 
     #region Enums
