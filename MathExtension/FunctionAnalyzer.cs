@@ -2,23 +2,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace MathExtension.FunctionAnalyser
+namespace MathExtension.FunctionAnalyzer
 {
     /// <summary>
-    /// Function Analyser
+    /// Function Analyzer
     /// </summary>
-    public class Analyser : IDisposable
+    public class Analyzer : IDisposable
     {
         #region Constructor
-            public Analyser(Func<double,double> f) : this(f, ValueRange.Real)
+            public Analyzer(Expression<Func<double,double>> f) : this(f, ValueRange.Real)
             { }
 
-            public Analyser(Func<double, double> f, ValueRange inputRange)
+            public Analyzer(Expression<Func<double, double>> f, ValueRange inputRange)
             {
                 if (f == null) throw new ArgumentNullException("f");
+                /* Checking common expressions */
+                if (f.NodeType == ExpressionType.Constant) // x=>1
+                {
+                    
+                }
+                else if((f.Body.NodeType == ExpressionType.Parameter && f.Parameters[0].Name == (f.Body as ParameterExpression).Name) || f.Body.NodeType == ExpressionType.ArrayIndex) //x=>x || x=>x[0]
+                {
 
+                }
+                else if(
+                    ((f.Body.NodeType == ExpressionType.Add ||
+                      f.Body.NodeType == ExpressionType.Subtract) &&
+                    ((f.Body as BinaryExpression).Left.NodeType == ExpressionType.Constant) || (f.Body as BinaryExpression).Left.NodeType == ExpressionType.Parameter)
+                    ) // x=>x + 0 || x=>x - 1 || x=>x
+                {
+
+                }
             }
         #endregion
 
@@ -77,27 +94,22 @@ namespace MathExtension.FunctionAnalyser
         #endregion
 
         #region Methods
-            public bool Contains(double value)
-            {
-                if (
-                    value < this.min ||
-                    (value == this.min && this.Include != IncludeValues.Min && this.Include != IncludeValues.Both) ||
-                    //EXCLUDE
-                    value > this.max ||
-                    (value == this.max && this.Include != IncludeValues.Max && this.Include != IncludeValues.Both)
+        public bool Contains(double value)
+        {
+            if (
+                value < this.min ||
+                (value == this.min && this.Include != IncludeValues.Min && this.Include != IncludeValues.Both) ||
+                  this.Excludes.Where(e => e.Contains(value)).Count() == 0 ||
+                  value > this.max ||
+                  (value == this.max && this.Include != IncludeValues.Max && this.Include != IncludeValues.Both)
                 )
                     return false;
                 return true;
             }
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
 
-            IEnumerator<double> IEnumerable<double>.GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
+            IEnumerator IEnumerable.GetEnumerator() => new ValueRangeEnumerator(this);
+
+            IEnumerator<double> IEnumerable<double>.GetEnumerator() => new ValueRangeEnumerator(this);
         #endregion
 
         #region Static

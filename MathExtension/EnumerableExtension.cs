@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace MathExtension.EnumerableExtension
 {
     public static class EnumerableExtension
     {
-        public static IEnumerable<T> Sort<T>(this IEnumerable<T> input) where T : IComparable
+        public static IEnumerable<T> BubbleSort<T>(this IEnumerable<T> input) where T : IComparable
         {
             if (input == null || input.Count() < 2) return input;
             T[] ret = (T[])input;
@@ -22,6 +23,29 @@ namespace MathExtension.EnumerableExtension
                 }
             }
             return ret;
+        }
+
+        public static IEnumerable<byte> BucketSort<T>(this IEnumerable<byte> input)
+        {
+            if (input == null || input.Count() < 2) return input;
+            byte max = input.Max();
+            int shift = input.Min();
+            uint[] values = new uint[max-shift];
+            foreach (byte b in input)
+                values[b - shift-1]++;
+            byte[] ret = new byte[values.Sum()];
+            for(uint i = 0; i < ret.Length; i++)
+            {
+                for(uint j = 0; i < values.Length; i++)
+                {
+                    if(values[j] > 0)
+                    {
+                        values[j]--;
+                        ret[i] = Convert.ToByte(i) + Convert.ToByte(shift);
+                        break;
+                    }
+                }
+            }
         }
 
         public static uint Count<T>(this IEnumerable<T> input)
@@ -50,6 +74,82 @@ namespace MathExtension.EnumerableExtension
                 if (value.CompareTo(current) > 0)
                     current = value;
             return current;
+        }
+
+        public static byte Sum(this IEnumerable<byte> input)
+        {
+            byte val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+
+        public static sbyte Sum(this IEnumerable<sbyte> input)
+        {
+            sbyte val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+
+        public static short Sum(this IEnumerable<short> input)
+        {
+            short val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+
+        public static ushort Sum(this IEnumerable<ushort> input)
+        {
+            ushort val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+
+        public static int Sum(this IEnumerable<int> input)
+        {
+            int val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+
+        public static uint Sum(this IEnumerable<uint> input)
+        {
+            uint val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+        public static long Sum(this IEnumerable<long> input)
+        {
+            long val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+        public static ulong Sum(this IEnumerable<ulong> input)
+        {
+            ulong val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+        public static float Sum(this IEnumerable<float> input)
+        {
+            float val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
+        }
+        public static double Sum(this IEnumerable<double> input)
+        {
+            double val = 0;
+            foreach (var item in input)
+                val += item;
+            return val;
         }
     }
 }
