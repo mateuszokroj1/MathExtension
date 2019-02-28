@@ -10,8 +10,10 @@ namespace MathExtension.EnumerableExtension
         {
             if (input == null || input.Count() < 2) return input;
             T[] ret = (T[])input;
-            for (uint i = 0; i <= ret.Length; i++)
+            bool changed = true;
+            for (uint i = 0; i <= ret.Length && !changed; i++)
             {
+                changed = false;
                 for (uint index = 0; index < ret.Length - 1; index++)
                 {
                     if (ret[index].CompareTo(ret[index + 1]) > 0)
@@ -19,6 +21,7 @@ namespace MathExtension.EnumerableExtension
                         T first = ret[index], second = ret[index + 1];
                         ret[index] = second;
                         ret[index + 1] = first;
+                        changed = true;
                     }
                 }
             }

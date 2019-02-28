@@ -101,6 +101,45 @@ namespace MathExtension
             return newy;
         }
 
+        public static uint Mod(int a, uint b)
+        {
+            int r = 0;
+            uint q = 1;
+            do
+            {
+                r = a - (int)(q * b);
+                q++;
+            }
+            while (r > 0);
+            return (uint)(r < 0 ? a - (int)(--q)*(int)b : 0);
+        }
+
+        /// <summary>
+        /// Euclides algorithm
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static int GCD(int a, int b)
+        {
+            while (a != b)
+                if (a < b) b -= a;
+                else a -= b;
+            return a;
+        }
         
+        /// <summary>
+        /// Euclides algorithm (recursive version)
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static long GCD(long a, long b)
+        {
+            if (a != b)
+                return GCD(a > b ? a-b : a, b > a ? b-a : b);
+            else
+                return a;
+        }
     }
 }
